@@ -1,7 +1,7 @@
-package io.scalac.example.stage
+package io.scalac.example.stage.proxy
 
-import akka.stream.stage.{ GraphStage, GraphStageLogic, InHandler, OutHandler }
-import akka.stream.{ Attributes, BidiShape, Inlet, Outlet }
+import akka.stream.stage.{GraphStage, GraphStageLogic, InHandler, OutHandler}
+import akka.stream.{Attributes, BidiShape, Inlet, Outlet}
 import akka.util.ByteString
 
 object ProxyGraphStage {
