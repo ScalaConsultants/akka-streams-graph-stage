@@ -1,10 +1,10 @@
-package io.scalac.example.stage.proxy
+package io.scalac.streams.stage.proxy
 
 import akka.stream.stage.{GraphStage, GraphStageLogic, InHandler, OutHandler}
 import akka.stream.{Attributes, BidiShape, Inlet, Outlet}
 import akka.util.ByteString
 
-object ProxyGraphStage {
+object HttpsProxyGraphStage {
   sealed trait State
   // Entry state
   case object Starting extends State
@@ -16,10 +16,10 @@ object ProxyGraphStage {
   case object Connected extends State
 }
 
-class ProxyGraphStage(targetHostName: String, targetPort: Int)
+class HttpsProxyGraphStage(targetHostName: String, targetPort: Int)
   extends GraphStage[BidiShape[ByteString, ByteString, ByteString, ByteString]] {
 
-  import ProxyGraphStage._
+  import HttpsProxyGraphStage._
 
   val bytesIn: Inlet[ByteString] = Inlet("OutgoingTCP.in")
   val bytesOut: Outlet[ByteString] = Outlet("OutgoingTCP.out")

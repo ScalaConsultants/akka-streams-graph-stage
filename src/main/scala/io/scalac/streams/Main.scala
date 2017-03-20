@@ -1,13 +1,13 @@
-package io.scalac.example
+package io.scalac.streams
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import akka.stream.scaladsl.{BidiFlow, Flow, Sink, Source}
+import akka.stream.scaladsl.{BidiFlow, Flow, Source}
 import akka.util.ByteString
-import io.scalac.example.stage.proxy.{NeutralGraphStage, ProxyGraphStage, ProxyGraphStage0}
-import io.scalac.example.stage.{MyFilterGraphStage, SugaredMyFilterGraphStage}
+import io.scalac.streams.stage.basic.{MyFilterGraphStage, SugaredMyFilterGraphStage}
+import io.scalac.streams.stage.proxy._
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 object Main extends Runner {
   def main(args: Array[String]): Unit = {
@@ -35,16 +35,17 @@ object Main3 extends Runner {
   def main(args: Array[String]): Unit = {
     run { implicit mat =>
       val source = Source(List(ByteString("abc"), ByteString("def")))
-      val proxyGraphStage = new ProxyGraphStage0("hostname", 8888)
+      val proxyGraphStage = new CorrectHttpsProxyGraphStage("hostname", 8888)
       val proxyFlow = BidiFlow.fromGraph(proxyGraphStage)
 
       val flow = Flow[ByteString].statefulMapConcat { () =>
         var firstElement = true
 
         (input: ByteString) => {
+          throw new RuntimeException("bazinga error")
           if(firstElement) {
             firstElement = false
-            List(ByteString("OKff"))
+            List(ByteString("OK ff"))
           } else {
             List(input)
           }

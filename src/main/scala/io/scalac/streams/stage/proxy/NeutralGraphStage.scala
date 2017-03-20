@@ -1,7 +1,7 @@
-package io.scalac.example.stage.proxy
+package io.scalac.streams.stage.proxy
 
-import akka.stream.{Attributes, BidiShape, Inlet, Outlet}
 import akka.stream.stage.{GraphStage, GraphStageLogic, InHandler, OutHandler}
+import akka.stream.{Attributes, BidiShape, Inlet, Outlet}
 import akka.util.ByteString
 
 class NeutralGraphStage extends GraphStage[BidiShape[ByteString, ByteString, ByteString, ByteString]] {

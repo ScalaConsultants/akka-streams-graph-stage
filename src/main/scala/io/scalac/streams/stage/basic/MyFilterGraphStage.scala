@@ -1,7 +1,7 @@
-package io.scalac.example.stage
+package io.scalac.streams.stage.basic
 
-import akka.stream.{Attributes, FlowShape, Inlet, Outlet}
 import akka.stream.stage.{GraphStage, GraphStageLogic, InHandler, OutHandler}
+import akka.stream.{Attributes, FlowShape, Inlet, Outlet}
 
 class MyFilterGraphStage[T](predicate: T => Boolean) extends GraphStage[FlowShape[T, T]] {
   // inlets/outlets names ("MyFilter.in" and "MyFilter.out" in this case)

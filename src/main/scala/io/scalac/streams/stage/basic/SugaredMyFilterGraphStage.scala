@@ -1,4 +1,4 @@
-package io.scalac.example.stage
+package io.scalac.streams.stage.basic
 
 import akka.stream.Attributes
 import akka.stream.impl.fusing.GraphStages.SimpleLinearGraphStage

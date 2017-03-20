@@ -1,13 +1,13 @@
-package io.scalac.example.stage.proxy
+package io.scalac.streams.stage.proxy
 
 import akka.stream.stage.{GraphStage, GraphStageLogic, InHandler, OutHandler}
 import akka.stream.{Attributes, BidiShape, Inlet, Outlet}
 import akka.util.ByteString
 
-class ProxyGraphStage0(targetHostName: String, targetPort: Int)
+class HttpsProxyGraphStage0(targetHostName: String, targetPort: Int)
   extends GraphStage[BidiShape[ByteString, ByteString, ByteString, ByteString]] {
 
-  import ProxyGraphStage._
+  import HttpsProxyGraphStage._
 
   val bytesIn: Inlet[ByteString] = Inlet("OutgoingTCP.in")
   val bytesOut: Outlet[ByteString] = Outlet("OutgoingTCP.out")
@@ -22,9 +22,6 @@ class ProxyGraphStage0(targetHostName: String, targetPort: Int)
   override def createLogic(inheritedAttributes: Attributes): GraphStageLogic = new GraphStageLogic(shape) {
     private var state: State = Starting
     private var bufferedMsgs = Vector.empty[ByteString]
-
-    private def proxyResponseValid(response: ByteString): Boolean =
-      response.utf8String == "OK"
 
     setHandler(sslIn, new InHandler {
       override def onPush() = {
@@ -46,7 +43,6 @@ class ProxyGraphStage0(targetHostName: String, targetPort: Int)
             val proxyResponse = grab(bytesIn)
             if(proxyResponseValid(proxyResponse)) {
               state = Connected
-              pull(bytesIn)
               emitMultiple(bytesOut, bufferedMsgs)
             } else {
               failStage(new ProxyConnectionFailedException(s"The HTTPS proxy rejected to open a connection to $targetHostName:$targetPort"))
@@ -61,6 +57,7 @@ class ProxyGraphStage0(targetHostName: String, targetPort: Int)
       override def onPull() = {
         state match {
           case Starting ⇒
+            // We send connectMsg before any other message
             push(bytesOut, connectMsg)
             state = Connecting
             pull(sslIn)
@@ -77,6 +74,13 @@ class ProxyGraphStage0(targetHostName: String, targetPort: Int)
         pull(bytesIn)
       }
     })
+
+    /**
+      * Hugely simplified for sake of article.
+      * We assume "OK" is the only valid response and that we will receive it as a single message.
+      */
+    private def proxyResponseValid(response: ByteString): Boolean =
+      response.utf8String == "OK"
   }
 
 }
