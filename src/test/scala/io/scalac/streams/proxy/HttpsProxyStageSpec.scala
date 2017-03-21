@@ -9,7 +9,6 @@ import akka.testkit.TestKit
 import akka.util.ByteString
 import io.scalac.streams.stage.proxy._
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.exceptions.TestFailedException
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
 class HttpsProxyStageSpec (_system: ActorSystem) extends TestKit(_system) with WordSpecLike with Matchers with BeforeAndAfterAll
@@ -51,12 +50,18 @@ class HttpsProxyStageSpec (_system: ActorSystem) extends TestKit(_system) with W
       sink.expectComplete()
     }
 
-    "should be transparent for errors" in new Context {
-//      val (specificSource, done) = TestSource.probe[ByteString]
-//        .via(flowUnderTest)
-//        .toMat(Sink.head)(Keep.both)
-//        .run()
+    "should failStage for non-OK Proxy response" in new Context {
+      source.sendNext(ByteString("anything"))
+      sink.request(1)
 
+      transportInProbe.requestNext()
+      transportOutProbe.sendNext(ByteString("ERROR"))
+
+      source.expectCancellation()
+      sink.expectError(new ProxyConnectionFailedException(s"The HTTPS proxy rejected to open a connection to $targetHostName:$targetPort"))
+    }
+
+    "should be transparent for errors" in new Context {
       source.sendNext(ByteString("anything"))
       sink.request(1)
 
@@ -65,16 +70,6 @@ class HttpsProxyStageSpec (_system: ActorSystem) extends TestKit(_system) with W
 
       source.expectCancellation()
       sink.expectError(new TestException("abc"))
-
-//      transportInProbe.cancel()
-//      println("HERE!!")
-//      println("HERE!! 2")
-//      transportOutProbe.sendError(new RuntimeException("abc"))
-//      val exception = intercept[TestFailedException](done.futureValue)
-//      println("bazinga: " + exception)
-//      println("bazinga: " + exception.cause)
-//      println("bazinga: " + exception.cause.get.getMessage)
-//      exception.cause.get.getMessage should equal("abc")
     }
 
   }
