@@ -3,11 +3,12 @@ package io.scalac.streams.stage.proxy
 import akka.stream.stage.{GraphStage, GraphStageLogic, InHandler, OutHandler}
 import akka.stream.{Attributes, BidiShape, Inlet, Outlet}
 import akka.util.ByteString
+import io.scalac.streams.stage.proxy.common.ProxyConnectionFailedException
 
 class HttpsProxyStage0(targetHostName: String, targetPort: Int)
   extends GraphStage[BidiShape[ByteString, ByteString, ByteString, ByteString]] {
 
-  import HttpsProxyState._
+  import io.scalac.streams.stage.proxy.common.HttpsProxyState._
 
   val bytesIn: Inlet[ByteString] = Inlet("OutgoingTCP.in")
   val bytesOut: Outlet[ByteString] = Outlet("OutgoingTCP.out")

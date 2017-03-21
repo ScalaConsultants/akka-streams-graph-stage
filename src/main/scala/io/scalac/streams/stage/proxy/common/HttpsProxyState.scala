@@ -1,4 +1,4 @@
-package io.scalac.streams.stage.proxy
+package io.scalac.streams.stage.proxy.common
 
 object HttpsProxyState {
   sealed trait State

@@ -8,6 +8,7 @@ import akka.stream.{ActorMaterializer, ActorMaterializerSettings}
 import akka.testkit.TestKit
 import akka.util.ByteString
 import io.scalac.streams.stage.proxy._
+import io.scalac.streams.stage.proxy.common.ProxyConnectionFailedException
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
