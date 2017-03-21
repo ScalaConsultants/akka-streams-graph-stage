@@ -5,10 +5,10 @@ import akka.stream.{Attributes, BidiShape, Inlet, Outlet}
 import akka.util.ByteString
 
 // This one will throw an exception
-class CorrectHttpsProxyGraphStage(targetHostName: String, targetPort: Int)
+class HttpsProxyStage2(targetHostName: String, targetPort: Int)
   extends GraphStage[BidiShape[ByteString, ByteString, ByteString, ByteString]] {
 
-    import HttpsProxyGraphStage._
+    import HttpsProxyState._
 
     val bytesIn: Inlet[ByteString] = Inlet("OutgoingTCP.in")
     val bytesOut: Outlet[ByteString] = Outlet("OutgoingTCP.out")
@@ -34,8 +34,6 @@ class CorrectHttpsProxyGraphStage(targetHostName: String, targetPort: Int)
               push(bytesOut, grab(sslIn))
           }
         }
-
-        override def onUpstreamFinish(): Unit = complete(bytesOut)
       })
 
       setHandler(bytesIn, new InHandler {
@@ -47,9 +45,7 @@ class CorrectHttpsProxyGraphStage(targetHostName: String, targetPort: Int)
               val proxyResponse = grab(bytesIn)
               if(proxyResponseValid(proxyResponse)) {
                 state = Connected
-                if(isAvailable(bytesOut)){
-                  pull(sslIn)
-                }
+                pull(sslIn)
                 pull(bytesIn)
               } else {
                 failStage(new ProxyConnectionFailedException(s"The HTTPS proxy rejected to open a connection to $targetHostName:$targetPort"))
@@ -58,8 +54,6 @@ class CorrectHttpsProxyGraphStage(targetHostName: String, targetPort: Int)
               push(sslOut, grab(bytesIn))
           }
         }
-
-        override def onUpstreamFinish(): Unit = complete(sslOut)
       })
 
       setHandler(bytesOut, new OutHandler {
@@ -74,16 +68,12 @@ class CorrectHttpsProxyGraphStage(targetHostName: String, targetPort: Int)
               pull(sslIn)
           }
         }
-
-        override def onDownstreamFinish(): Unit = cancel(sslIn)
       })
 
       setHandler(sslOut, new OutHandler {
         override def onPull() = {
           pull(bytesIn)
         }
-
-        override def onDownstreamFinish(): Unit = cancel(bytesIn)
       })
 
       /**

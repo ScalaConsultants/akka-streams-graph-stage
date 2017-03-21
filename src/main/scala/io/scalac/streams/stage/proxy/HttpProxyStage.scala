@@ -4,22 +4,10 @@ import akka.stream.stage.{GraphStage, GraphStageLogic, InHandler, OutHandler}
 import akka.stream.{Attributes, BidiShape, Inlet, Outlet}
 import akka.util.ByteString
 
-object HttpsProxyGraphStage {
-  sealed trait State
-  // Entry state
-  case object Starting extends State
-
-  // State after CONNECT messages has been sent to Proxy and before Proxy responded back
-  case object Connecting extends State
-
-  // State after Proxy responded back
-  case object Connected extends State
-}
-
-class HttpsProxyGraphStage(targetHostName: String, targetPort: Int)
+class HttpsProxyStage(targetHostName: String, targetPort: Int)
   extends GraphStage[BidiShape[ByteString, ByteString, ByteString, ByteString]] {
 
-  import HttpsProxyGraphStage._
+  import HttpsProxyState._
 
   val bytesIn: Inlet[ByteString] = Inlet("OutgoingTCP.in")
   val bytesOut: Outlet[ByteString] = Outlet("OutgoingTCP.out")
@@ -102,5 +90,3 @@ class HttpsProxyGraphStage(targetHostName: String, targetPort: Int)
   }
 
 }
-
-case class ProxyConnectionFailedException(msg: String) extends RuntimeException(msg)

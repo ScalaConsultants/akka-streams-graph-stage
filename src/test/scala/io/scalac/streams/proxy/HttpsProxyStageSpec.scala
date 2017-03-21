@@ -83,9 +83,9 @@ class HttpsProxyStageSpec (_system: ActorSystem) extends TestKit(_system) with W
     val targetHostName = "akka.io"
     val targetPort = 443
 
-    // Here you can instantiate different implementation - e.g. some fault one like HttpsProxyGraphStage0
-    val proxyGraphStage = new CorrectHttpsProxyGraphStage(targetHostName, targetPort)
-    val proxyGraph = BidiFlow.fromGraph(proxyGraphStage)
+    // Here you can instantiate different implementation - e.g. some fault one like HttpsProxyStage0
+    val proxyStage = new CorrectHttpsProxyStage(targetHostName, targetPort)
+    val proxyFlow = BidiFlow.fromGraph(proxyStage)
 
     val transportInProbe = TestSubscriber.probe[ByteString]()
     val transportOutProbe = TestPublisher.probe[ByteString]()
@@ -94,7 +94,7 @@ class HttpsProxyStageSpec (_system: ActorSystem) extends TestKit(_system) with W
       Sink.fromSubscriber(transportInProbe),
       Source.fromPublisher(transportOutProbe))
 
-    val flowUnderTest = proxyGraph.join(transportFlow)
+    val flowUnderTest = proxyFlow.join(transportFlow)
 
     val (source, sink) = TestSource.probe[ByteString]
       .via(flowUnderTest)

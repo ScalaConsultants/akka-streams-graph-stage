@@ -6,7 +6,7 @@ Code for the first part of article (basics of `GraphStage`) is located in `io.sc
 
 Code for `ProxyGraphStage` may be found in `io.scalac.streams.stage.proxy`. First and naive version of code for 
 `ProxyGraphStage` is in `HttpsProxyGraphStage0.scala` and then it's consequently improved 
-up to `HttpsProxyGraphStage0.scala`. The final version is in`CorrectHttpsProxyGraphStage.scala`
+up to `HttpsProxyGraphStage2.scala`. The final version is in`CorrectHttpsProxyGraphStage.scala`
 
 ## How to run
 

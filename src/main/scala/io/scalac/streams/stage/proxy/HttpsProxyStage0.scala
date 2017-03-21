@@ -4,10 +4,10 @@ import akka.stream.stage.{GraphStage, GraphStageLogic, InHandler, OutHandler}
 import akka.stream.{Attributes, BidiShape, Inlet, Outlet}
 import akka.util.ByteString
 
-class HttpsProxyGraphStage0(targetHostName: String, targetPort: Int)
+class HttpsProxyStage0(targetHostName: String, targetPort: Int)
   extends GraphStage[BidiShape[ByteString, ByteString, ByteString, ByteString]] {
 
-  import HttpsProxyGraphStage._
+  import HttpsProxyState._
 
   val bytesIn: Inlet[ByteString] = Inlet("OutgoingTCP.in")
   val bytesOut: Outlet[ByteString] = Outlet("OutgoingTCP.out")
