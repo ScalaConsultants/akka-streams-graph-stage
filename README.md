@@ -1,6 +1,6 @@
 # Custom GraphStage in Akka Streams
 
-This is accompanying repository for article [ADD LINK WHEN AVAILABLE].
+This is accompanying repository for [article](http://blog.scalac.io/2017/04/25/akka-streams-graph-stage.html) about `GraphStage`.
 
 Code for the first part of article (basics of `GraphStage`) is located in `io.scalac.streams.stage.basic` package. 
 
