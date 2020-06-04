@@ -76,7 +76,7 @@ class CorrectHttpsProxyStage(targetHostName: String, targetPort: Int)
           }
         }
 
-        override def onDownstreamFinish(): Unit = cancel(sslIn)
+        override def onDownstreamFinish(cause: Throwable): Unit = cancel(sslIn)
       })
 
       setHandler(sslOut, new OutHandler {
@@ -84,7 +84,7 @@ class CorrectHttpsProxyStage(targetHostName: String, targetPort: Int)
           pull(bytesIn)
         }
 
-        override def onDownstreamFinish(): Unit = cancel(bytesIn)
+        override def onDownstreamFinish(cause: Throwable): Unit = cancel(bytesIn)
       })
 
       /**
